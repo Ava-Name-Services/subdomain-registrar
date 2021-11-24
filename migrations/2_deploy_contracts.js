@@ -1,6 +1,6 @@
 var HashRegistrar = artifacts.require("HashRegistrar");
 var TestResolver = artifacts.require("TestResolver");
-var ENS = artifacts.require("@ensdomains/ens/contracts/ENSRegistry.sol");
+var ENS = artifacts.require("ENSRegistry");
 var SubdomainRegistrar = artifacts.require("SubdomainRegistrar");
 
 var namehash = require('eth-ens-namehash');
@@ -9,27 +9,26 @@ var Promise = require('bluebird');
 
 var domainnames = require('../app/js/domains.json');
 
-module.exports = function (deployer, network, accounts) {
+// var ensAddress = "0x1F68692D58bABeDC2549a49a2F73cf05fc078af1";
+
+module.exports = function as(deployer, network, accounts) {
     return deployer.then(async () => {
-        if (network == "test") {
+        if (network == "fuji-fork") {
+            let ens = await ENS.at('0x1F68692D58bABeDC2549a49a2F73cf05fc078af1');
 
-            await deployer.deploy(ENS);
+            await deployer.deploy(HashRegistrar, ens.address, namehash.hash('avax'), 1493895600);
+            // await deployer.deploy(TestResolver);
 
-            const ens = await ENS.deployed();
+            // await ens.setSubnodeOwner('0x0', '0x' + sha3('avax'), accounts[0]);
+            // await ens.setSubnodeOwner(namehash.hash('avax'), '0x' + sha3('resolver'), accounts[0]);
 
-            await deployer.deploy(HashRegistrar, ens.address, namehash.hash('eth'), 1493895600);
-            await deployer.deploy(TestResolver);
-
-            await ens.setSubnodeOwner('0x0', '0x' + sha3('eth'), accounts[0]);
-            await ens.setSubnodeOwner(namehash.hash('eth'), '0x' + sha3('resolver'), accounts[0]);
-
-            const resolver = await TestResolver.deployed();
-            await ens.setResolver(namehash.hash('resolver.eth'), resolver.address);
+            // const resolver = await TestResolver.deployed(); // public resolver
+            // await ens.setResolver(namehash.hash('resolver.avax'), resolver.address);
 
             const dhr = await HashRegistrar.deployed();
-            await ens.setSubnodeOwner('0x0', '0x' + sha3('eth'), dhr.address);
+            await ens.setSubnodeOwner('0x0', '0x' + sha3('avax'), dhr.address);
 
-            await deployer.deploy(SubdomainRegistrar, ens.address);
+            await deployer.deploy(SubdomainRegistrar, ens.address); // ENS address
 
             const registrar = await SubdomainRegistrar.deployed();
 
@@ -42,7 +41,7 @@ module.exports = function (deployer, network, accounts) {
             // });
 
         } else {
-            const ens = ENS.deployed();
+            let ens = await ENS.at('0x1F68692D58bABeDC2549a49a2F73cf05fc078af1');
             await deployer.deploy(SubdomainRegistrar, ens.address);
         }
     });
