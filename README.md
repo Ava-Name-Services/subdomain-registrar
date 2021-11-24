@@ -18,7 +18,7 @@ The ANS Subdomain registrar uses npm to manage dependencies, therefore the insta
 yarn
 ```
 
-### truffle fuji deployment
+### Truffle fuji deployment
 ```
    'SubdomainRegistrar'
    ------------------------------
