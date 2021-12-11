@@ -13,10 +13,10 @@ var domainnames = require('../app/js/domains.json');
 
 module.exports = function as(deployer, network, accounts) {
     return deployer.then(async () => {
-        if (network == "fuji-fork") {
+        if (network == "fuji") {
             let ens = await ENS.at('0x1F68692D58bABeDC2549a49a2F73cf05fc078af1');
 
-            await deployer.deploy(HashRegistrar, ens.address, namehash.hash('avax'), 1493895600);
+            await deployer.deploy(HashRegistrar, ens.address, namehash.hash(''), 1639218232);
             // await deployer.deploy(TestResolver);
 
             // await ens.setSubnodeOwner('0x0', '0x' + sha3('avax'), accounts[0]);
@@ -26,11 +26,13 @@ module.exports = function as(deployer, network, accounts) {
             // await ens.setResolver(namehash.hash('resolver.avax'), resolver.address);
 
             const dhr = await HashRegistrar.deployed();
-            await ens.setSubnodeOwner('0x0', '0x' + sha3('avax'), dhr.address);
+            console.log("===>dhr", dhr.address)
+    
+            // await ens.setSubnodeOwner('0x0', '0x' + sha3('avax'), dhr.address); // hashregistrar
 
-            await deployer.deploy(SubdomainRegistrar, ens.address); // ENS address
+            // await deployer.deploy(SubdomainRegistrar, ens.address); // ENS address
 
-            const registrar = await SubdomainRegistrar.deployed();
+            // const registrar = await SubdomainRegistrar.deployed();
 
             // @todo figure out why this doesn't work
             // return Promise.map(domainnames, async function(domain) {
@@ -41,8 +43,8 @@ module.exports = function as(deployer, network, accounts) {
             // });
 
         } else {
-            let ens = await ENS.at('0x1F68692D58bABeDC2549a49a2F73cf05fc078af1');
-            await deployer.deploy(SubdomainRegistrar, ens.address);
+            // let ens = await ENS.at('0x1F68692D58bABeDC2549a49a2F73cf05fc078af1');
+            // await deployer.deploy(SubdomainRegistrar, ens.address);
         }
     });
 };
