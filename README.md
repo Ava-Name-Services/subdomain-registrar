@@ -1,4 +1,4 @@
-# ENS Subdomain registrar
+# ANS Subdomain registrar
 
 [![Build Status](https://travis-ci.org/ensdomains/subdomain-registrar.svg?branch=master)](https://travis-ci.org/ensdomains/subdomain-registrar) [![License](https://img.shields.io/badge/License-BSD--2--Clause-blue.svg)](LICENSE)
 
@@ -12,10 +12,33 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Installing
 
-The ENS Subdomain registrar uses npm to manage dependencies, therefore the installation process is kept simple:
+The ANS Subdomain registrar uses npm to manage dependencies, therefore the installation process is kept simple:
 
 ```
-npm install
+yarn
+```
+
+### Truffle fuji deployment
+```
+   'SubdomainRegistrar'
+   ------------------------------
+   > transaction hash:    0x625fc91ba8bc5a894d0e5a904c5d957a56077e91df61f6beee798cfba843c3b7
+   > Blocks: 1            Seconds: 5
+   > contract address:    0xa05E4DCC5eaf37fE060F932698BaeE13C4d213ac
+   > block number:        2806881
+   > block timestamp:     1637753316
+   > account:             0x8db97C7cEcE249c2b98bDC0226Cc4C2A57BF52FC
+   > balance:             11.896601275
+   > gas used:            2929734 (0x2cb446)
+   > gas price:           25 gwei
+   > value sent:          0 ETH
+   > total cost:          0.07324335 ETH
+
+
+   > Saving migration to chain.
+   > Saving artifacts
+   -------------------------------------
+   > Total cost:          0.07324335 ETH
 ```
 
 ### Running tests
@@ -42,7 +65,7 @@ npm run dev
 
 ## Operation
 
-`SubdomainRegistrar` implements a contract that takes ownership of (multiple) .eth domains, and sells subdomains to users for a simple one-time fee. When users register a subdomain, it is automatically configured with a default resolver and pointed at their account. This permits easy one-transaction claiming and assignment of an ENS domain for users, significantly improving the ENS user-experience.
+`SubdomainRegistrar` implements a contract that takes ownership of (multiple) .avax domains, and sells subdomains to users for a simple one-time fee. When users register a subdomain, it is automatically configured with a default resolver and pointed at their account. This permits easy one-transaction claiming and assignment of an ANS domain for users, significantly improving the ENS user-experience.
 
 A variety of frontends can be built to interact with the subdomain registrar; a simple implementation is provided in this repository. Domain owners may set a 'commission rate', which is a percentage fee that is sent to the address the frontend nominates. This can be any amount, but frontends are free to set criteria for inclusion or prioritisation based on the fee paid.
 
@@ -50,7 +73,7 @@ There is no functionality in the contract for listing or querying domains that a
 
 ### Adding a domain
 
-Any .eth domain owner may use this contract by:
+Any .avax domain owner may use this contract by:
 
  1. Transferring ownership of the Deed to the deployed contract.
  2. Calling `configureDomain(name, price, referralFeePPM)`, where `name` is the name of the domain (without .eth), price is the price in wei to charge for a subdomain registration, and `referralFeePPM` is the referral fee to offer to frontends, in parts-per-million.
@@ -62,18 +85,18 @@ Note that this process is IRREVOCABLE! For the security of customers, once you h
 
 In the event of a bug or issue with the subdomain registrar being found, a migration path to a new implementation is provided. The owner of the subdomain registrar may halt new registrations, followed by setting a migration address to a new implementation. Afterwards, domain owners may call `migrate` to transfer ownership of their domain to the new implementation. Only domain owners may do this, so as to prevent the owner of the subdomain registrar from being able to sieze ownership of the names.
 
-### Upgrades to the .eth registrar
+### Upgrades to the .avax registrar
 
-The current .eth registrar is an interim implementation, and is expected to be replaced in the near future. This is likely to be accompanied by a change in API, which makes catering to this in existing contracts difficult. To avoid this, the subdomain registrar implements a precommitment strategy.
+The current .avax registrar is an interim implementation, and is expected to be replaced in the near future. This is likely to be accompanied by a change in API, which makes catering to this in existing contracts difficult. To avoid this, the subdomain registrar implements a precommitment strategy.
 
 At any point, the owner of a domain may specify a 'transfer address' for their domain. Once a transfer address is set, it may not be changed or unset. At the point at which the .eth registrar is replaced (and not before), the owner may call the `upgrade` function, transferring ownership of the Deed to this address.
 
 The intended workflow is as follows:
 
- 1. A new .eth registrar is deployed, but not yet activated. Users are advised of a migration date.
+ 1. A new .avax registrar is deployed, but not yet activated. Users are advised of a migration date.
  2. Domain owners on the subdomain registrar set the transfer address for their domains to that of a 'migration contract' that will handle upgrading the domain to the new registrar and committing it to a new subdomain registrar.
  3. Users have an opportunity to evaluate the upgrade path, and stop using their subdomains if unhappy with it.
- 3. The .eth registrar upgrade happens.
+ 3. The .avax registrar upgrade happens.
  4. The domain owner calls `upgrade`, transferring ownership and performing the upgrade process.
 
 ## Built With
